@@ -16,7 +16,6 @@ import { useNavigation } from '@react-navigation/native';
 import { CurrentCache } from '../data/store';
 import * as FormatData from '../data/interfaceFormat';
 import * as CTEXT from './CustomText';
-import getColor from './getColor';
 
 // other import
 
@@ -550,55 +549,282 @@ export class ProcessBarSelfMade extends Component<{
 //     }
 // }
 
-export class TopNav3ItemWithTitle extends Component<{
-    title?: string,
-    nav?: any,
-    customStyle?: any,
-    showBack?: boolean,
-    iconRight?: any,
-    fnc?: () => void,
-    textCenter?: boolean,
+
+// export const Input: React.FC<{
+//     value: string
+//     onChange: (text: string) => void
+//     placeHolder?: string
+//     icon?: any
+//     otherOption?: TextInputProps
+// }> = ({ value, onChange, placeHolder, icon, otherOption }) => {
+//     return (
+//         <ViewRowStartCenter style={[styles.border2, styles.borderRadius2vw, styles.paddingV2vw, styles.paddingH4vw, { borderColor: getColor('Grey/40') }]}>
+//             {icon}
+//             <TextInput
+//                 placeholderTextColor={getColor('Grey/100')}
+//                 onChangeText={onChange}
+//                 placeholder={placeHolder}
+//                 style={[styles.padding2vw, styles.marginLeft2vw, styles.flex1,]}
+//                 {...otherOption}
+//             >
+//                 <CTEXT.Be16Reg style={{ color: clrStyle.black }}>{value}</CTEXT.Be16Reg>
+//             </TextInput>
+//         </ViewRowStartCenter>
+//     )
+// }
+
+export class LowBtn extends Component<{
+    title: string,
+    onPress: () => void,
+    bgColor?: string,
+    fontColor?: string,
+    icon?: any,
+    round?: number,
+    CustomStyle?: any,
+    FontElement?: ComponentType<{ children: React.ReactNode }>,
 }> {
     render() {
+        const { title, onPress, bgColor, fontColor, icon, round, CustomStyle, FontElement } = this.props;
+        const Font = FontElement ? FontElement : CTEXT.Roboto16Bold;
         return (
-            <ViewRowBetweenCenter style={[styles.w100, styles.gap2vw, styles.paddingH6vw, this.props.customStyle]}>
-                {this.props.showBack ?
+            <TouchableOpacity onPress={onPress} style={[styles.flexRowCenter, styles.gap3vw, styles.borderRadius100, styles.shadowW0H1Black, styles.w90, styles.alignSelfCenter, { backgroundColor: bgColor ? bgColor : clrStyle.main2, padding: vw(3.75), borderRadius: round ? round : vw(1000) }, CustomStyle ? CustomStyle : null]}>
+                {icon ? icon : null}
+                <Font style={{ color: fontColor ? fontColor : clrStyle.white, }}>{title}</Font>
+            </TouchableOpacity>
+        );
+    }
+}
+
+export class BoardingInput extends Component<{
+    title: string,
+    supFncTitle?: string,
+    supFncTitleColor?: string,
+    supFnc?: () => void,
+    subTitle?: string,
+    placeholder?: string,
+    value: string | number,
+    isNumber?: boolean,
+    onChgText: (value: string | number) => void,
+    CustomStyleClass?: any,
+    CustomStyleText?: any,
+    CustomStyleInput?: any,
+    contentType?: string
+    hideContent?: boolean,
+    hideContentFnc?: (value: boolean) => void,
+    autoCap?: 'none' | 'characters' | 'words' | 'sentences',
+    maxLength?: number,
+}> {
+
+    render() {
+        const { title, placeholder, value, onChgText, CustomStyleClass, CustomStyleInput, CustomStyleText, contentType, subTitle, supFnc, supFncTitle, hideContent, hideContentFnc, autoCap, maxLength, supFncTitleColor } = this.props;
+        const isNumber = this.props.isNumber ? this.props.isNumber : false;
+
+        function changFnc(value: string | number) {
+            if (isNumber) {
+                onChgText(parseInt(value as string));
+            } else {
+                onChgText(value);
+            }
+        }
+
+        return (
+            <View style={[styles.flexColCenter, styles.gap4vw, styles.positionRelative, CustomStyleClass]}>
+                {title ?
+                    <CTEXT.Nunito24Bold style={[{ color: clrStyle.main2 }, CustomStyleText]}>{title}</CTEXT.Nunito24Bold>
+                    : null}
+                <TextInput
+                    placeholder={placeholder ? placeholder : 'Type here'}
+                    value={value ? value.toString() : ''}
+                    onChangeText={changFnc}
+                    placeholderTextColor={clrStyle.grey1}
+                    secureTextEntry={hideContent ? hideContent : false}
+                    keyboardType={isNumber ? 'numeric' : 'default'}
+                    autoCapitalize={autoCap ? autoCap : 'sentences'}
+                    textContentType={contentType as TextInputProps['textContentType']}
+                    maxLength={maxLength ? maxLength : undefined}
+                    style={[styles.w100, styles.border1, styles.textCenter, { borderColor: value ? clrStyle.main2 : clrStyle.grey1, padding: vw(2.5), fontFamily: value ? 'Nunito-Bold' : 'Nunito-Regular', fontSize: vw(4.5), borderRadius: vw(2), color: value ? clrStyle.main2 : clrStyle.grey2 }, CustomStyleInput]} />
+                {hideContentFnc ?
                     <TouchableOpacity
-                        onPress={() => this.props.nav.goBack()}
-                        style={[styles.borderRadius100, styles.padding3vw, { backgroundColor: getColor('Grey/10') }]}>
-                        {SVG.leftLongArrow(vw(6), vw(6))}
-                    </TouchableOpacity> : <View style={[{ width: this.props.iconRight ? vw(12) : 0 }]} />}
-                <CTEXT.Be22Med style={[this.props.textCenter ? styles.textCenter : styles.textLeft, styles.flex1, { color: clrStyle.black }]}>{this.props.title}</CTEXT.Be22Med>
-                {this.props.iconRight ?
-                    <TouchableOpacity
-                        onPress={this.props.fnc}
-                        style={[styles.borderRadius100, styles.padding3vw, { backgroundColor: getColor('Grey/10') }]}>
-                        {this.props.iconRight}
-                    </TouchableOpacity> : <View style={[{ width: this.props.showBack ? vw(12) : 0 }]} />}
-            </ViewRowBetweenCenter>
+                        onPress={() => { hideContentFnc && hideContentFnc(!hideContent) }}
+                        style={[styles.padding2vw, styles.positionAbsolute, { bottom: -vw(12) }]}>
+                        <CTEXT.Nunito14Reg style={{ color: clrStyle.grey2 }}>{hideContent ? `Show ${contentType}` : `Hide ${contentType}`}</CTEXT.Nunito14Reg>
+                    </TouchableOpacity>
+                    : null}
+                {subTitle ?
+                    <View style={[styles.flexRowCenter]}>
+                        <CTEXT.Nunito16Reg style={[{ color: clrStyle.grey2 }]}>{subTitle}</CTEXT.Nunito16Reg>
+                        <TouchableOpacity onPress={supFnc}><CTEXT.Nunito16Reg style={[styles.textUnderline, { color: supFncTitleColor ? supFncTitleColor : clrStyle.grey2 }]}>{supFncTitle}</CTEXT.Nunito16Reg></TouchableOpacity>
+                    </View>
+                    : null
+                }
+            </View>
+        );
+    }
+}
+
+export class BoardingNavigation extends Component<{
+    fnc: (value: boolean) => void,
+    leftTitle: string,
+    rightTitle: string,
+    showGoBack: boolean,
+    currentStep: number,
+    dataLength: number,
+}> {
+    render() {
+        const { fnc, leftTitle, rightTitle, showGoBack, currentStep, dataLength } = this.props;
+
+        return (
+            <View style={[styles.flexRowBetweenCenter, styles.marginTop2vw, styles.marginBottom8vw]}>
+                <TouchableOpacity
+                    onPress={() => { fnc(false) }}>
+                    <View style={[styles.borderRadius100, styles.wfit, { padding: vw(2.5), backgroundColor: currentStep > 0 ? clrStyle.white2 : clrStyle.grey2 }]}>
+                        {showGoBack ?
+                            <CTEXT.Nunito16Reg style={[styles.textUpperCase, styles.paddingH2vw, { color: clrStyle.black }]}>{leftTitle}</CTEXT.Nunito16Reg>
+                            :
+                            SVG.sharpLeftArrow(vw(6), vw(6), currentStep > 0 ? clrStyle.main2 : clrStyle.white)}
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => { fnc(true) }}>
+                    <View style={[styles.borderRadius100, styles.wfit, { padding: vw(2.5), backgroundColor: currentStep < dataLength - 1 ? clrStyle.main1 : clrStyle.main2 }]}>
+                        {currentStep < dataLength - 1 ?
+                            SVG.sharpRightArrow(vw(6), vw(6), currentStep < dataLength - 1 ? clrStyle.main2 : clrStyle.grey2)
+                            :
+                            <CTEXT.Nunito16Bold style={[styles.textUpperCase, styles.paddingH2vw, { color: clrStyle.white }]}>{rightTitle}</CTEXT.Nunito16Bold>
+                        }
+                    </View>
+                </TouchableOpacity>
+            </View>
         )
     }
 }
 
-export const Input: React.FC<{
-    value: string
-    onChange: (text: string) => void
-    placeHolder?: string
-    icon?: any
-    otherOption?: TextInputProps
-}> = ({ value, onChange, placeHolder, icon, otherOption }) => {
-    return (
-        <ViewRowStartCenter style={[styles.border2, styles.borderRadius2vw, styles.paddingV2vw, styles.paddingH4vw, { borderColor: getColor('Grey/40') }]}>
-            {icon}
-            <TextInput
-                placeholderTextColor={getColor('Grey/100')}
-                onChangeText={onChange}
-                placeholder={placeHolder}
-                style={[styles.padding2vw, styles.marginLeft2vw, styles.flex1,]}
-                {...otherOption}
-            >
-                <CTEXT.Be16Reg style={{ color: clrStyle.black }}>{value}</CTEXT.Be16Reg>
-            </TextInput>
-        </ViewRowStartCenter>
-    )
+export class BoardingPicking extends Component<{
+    data: string[],
+    selected: string[],
+    setSelected: (value: string[]) => void,
+    maxLength?: number | undefined,
+    deleteFromOriginal?: string[],
+    deleteFromOtherSelected1?: string,
+    deleteFromOriginalFnc?: (value: string[]) => void,
+    deleteFromOtherSelectedFnc1?: (value: string) => void,
+    originalData?: string[],
+}> {
+    render() {
+        const { data, selected, setSelected, maxLength, originalData, deleteFromOriginal, deleteFromOriginalFnc, deleteFromOtherSelected1, deleteFromOtherSelectedFnc1 } = this.props;
+        const length = maxLength ? maxLength : data.length;
+        return (
+            <View style={[styles.flexRowStartCenter, styles.flexWrap, styles.gap4vw]}>
+                {data.map((item, index) => {
+                    return (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={() => {
+                                if (selected.includes(item)) {
+                                    setSelected(selected.filter((value) => value !== item))
+                                    if (deleteFromOriginal && deleteFromOriginalFnc && !originalData?.includes(item)) {
+                                        deleteFromOriginalFnc(deleteFromOriginal.filter((value) => value !== item))
+                                    }
+                                    if (deleteFromOtherSelected1 && deleteFromOtherSelectedFnc1) {
+                                        if (deleteFromOtherSelected1.includes(`${item},`)) {
+                                            deleteFromOtherSelectedFnc1(deleteFromOtherSelected1.replace(`${item},`, ''))
+                                        } else {
+                                            deleteFromOtherSelectedFnc1(deleteFromOtherSelected1.replace(item, ''))
+                                        }
+                                    }
+                                } else {
+                                    if (selected.length < length!) {
+                                        setSelected([...selected, item])
+                                    }
+                                };
+                            }}
+                            style={[styles.wfit, styles.paddingV2vw, styles.paddingH4vw, styles.border1, { borderColor: selected.includes(item) ? clrStyle.main2 : clrStyle.grey1, borderRadius: vw(2), }]}>
+                            {selected.includes(item) ?
+                                <CTEXT.Nunito14ExBold style={[{ color: clrStyle.main2 }]}>{item}</CTEXT.Nunito14ExBold>
+                                :
+                                <CTEXT.Nunito14Reg style={[{ color: clrStyle.grey1 }]}>{item}</CTEXT.Nunito14Reg>
+                            }
+                        </TouchableOpacity>
+                    )
+                })}
+            </View>
+        )
+    }
+}
+
+export class TopNav extends Component<{
+    children?: React.ReactNode,
+    title?: string,
+    returnPreScreen?: boolean,
+    returnPreScreenFnc?: () => void,
+    rightIcon?: any,
+    rightFnc?: () => void,
+    hideChildren?: any,
+}> {
+    render() {
+        const { children, title, returnPreScreen, returnPreScreenFnc, rightIcon, rightFnc, hideChildren } = this.props;
+        return (
+            <>
+                <Animated.View style={[styles.paddingH4vw, styles.paddingBottom4vw, styles.paddingTop2vw, styles.overflowHidden, { zIndex: 1, borderBottomLeftRadius: vw(6), borderBottomRightRadius: vw(6), }]}>
+                    <View style={[styles.paddingTop2vw, styles.w100, styles.flexRowBetweenCenter]}>
+                        {returnPreScreen ?
+                            <TouchableOpacity
+                                style={[styles.padding2vw]}
+                                onPress={returnPreScreenFnc}>
+                                {SVG.sharpLeftArrow(vw(6), vw(6), 'white')}
+                            </TouchableOpacity>
+                            : <View style={[{ width: vw(10), height: vw(10), }]} />
+                        }
+                        {title ? <CTEXT.Nunito22Bold style={[styles.textCenter, styles.alignSelfCenter, { color: clrStyle.main2 }]}>{title}</CTEXT.Nunito22Bold> : null}
+                        {rightIcon ?
+                            <TouchableOpacity
+                                style={[styles.padding2vw]}
+                                onPress={rightFnc}>
+                                {rightIcon}
+                            </TouchableOpacity>
+                            : <View style={[{ width: vw(10), height: vw(10), }]} />
+                        }
+                    </View>
+                    <Animated.View style={{ height: hideChildren, opacity: hideChildren }}>
+                        {children}
+                    </Animated.View>
+                </Animated.View >
+            </>
+        )
+    }
+}
+
+export class BannerSliderWithCenter extends Component<{
+    data: any[],
+    renderBanner: ({ item, index }: { item: any, index: number }) => React.ReactElement | null,
+    currentIndex: number,
+    setCurrentIndex: (value: number) => void,
+    itemWidth?: number,
+    snapToCenter?: boolean,
+    customStyle?: any,
+    customContainerStyle?: any,
+}> {
+    render() {
+        const { data, renderBanner, currentIndex, setCurrentIndex, itemWidth, snapToCenter, customStyle, customContainerStyle } = this.props;
+        const width = itemWidth ?? 1;
+        return (
+            <FlatList
+                data={data}
+                renderItem={renderBanner}
+                snapToInterval={width}
+                snapToAlignment={snapToCenter ? 'center' : 'start'}
+                // time to snap to the center
+                decelerationRate='fast'
+                keyExtractor={(item, index) => index.toString()}
+                horizontal={true}
+                // pagingEnabled={false}
+                showsHorizontalScrollIndicator={false}
+                onScroll={(event) => {
+                    setCurrentIndex(Math.round(event.nativeEvent.contentOffset.x / width))
+                }}
+                style={customStyle}
+                contentContainerStyle={[styles.flexRowStartCenter, customContainerStyle]}
+            />
+        )
+    }
 }

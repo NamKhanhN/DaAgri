@@ -10,27 +10,36 @@
 //     example: 'example'
 // };
 
-import { ItemFormat, NutriFormat, UserFormat } from "../interfaceFormat";
+import { StorageItem, UserFormat } from "../interfaceFormat";
 
 export interface CurrentCache {
     user: UserFormat;
-    todayNutri: NutriFormat;
-    goalNutri?: NutriFormat;
-    currentItem: ItemFormat[];
+    location: StorageItem['location'];
+    currentWeather: any
 }
 
 export interface Action {
     type: string;
-    payload?: UserFormat | NutriFormat;
+    payload?: any;
 }
 
 export const initialState: CurrentCache = {
     user: {
+        synced: false,
         name: '',
-        age: '',
-        imgAddress: '',
+        age: 0,
+        loginMethod: '',
         email: '',
+        dataCollect: false,
+        data: {
+            interest: [],
+            favorite: [],
+            job: '',
+        }
     },
-    todayNutri: {},
-    currentItem: []
+    location: {
+        lat: 0,
+        lng: 0
+    },
+    currentWeather: {}
 };

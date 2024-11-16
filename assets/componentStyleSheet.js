@@ -1,11 +1,20 @@
 import { StyleSheet } from 'react-native';
 import { vw, vh } from './stylesheet';
-import * as LOCALVARIABLE from '../Nutrition Foods_variables.json'
 
 const clrStyle = {
     white: '#FFFFFF',
     black: '#000000',
+    white2: `#F6F6F6`,
+    grey1: '#808797',
+    grey2: `#CCCED5`,
     // ***
+    main1: '#F4FAFC',
+    main2: '#4A9300',
+    main3: '#243D96',
+    main4: '#D0A200',
+    main5: '#E7F6D5',
+    main6: '#D31A1A',
+
 }
 export default clrStyle;
 

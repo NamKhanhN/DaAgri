@@ -78,9 +78,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.nutri24"
+    namespace "com.namkhanh2k7"
     defaultConfig {
-        applicationId "com.nutri24"
+        applicationId "com.namkhanh2k7"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -117,4 +117,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation project(':react-native-config')
 }
